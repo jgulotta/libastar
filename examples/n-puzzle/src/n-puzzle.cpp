@@ -8,6 +8,7 @@
  * methods and records the process to a file.
  */
 
+#include <chrono>
 #include <iostream>
 #include <fstream>
 #include <cmath>
@@ -19,6 +20,8 @@ using std::abs;
 using std::cerr;
 using std::endl;
 using std::ofstream;
+
+using clock_type = std::chrono::high_resolution_clock;
 
 /*
  * These are the three examined heuristic functions.
@@ -80,6 +83,16 @@ int sumdisman(const Puzzle& state, const Puzzle& solution) {
     return displaced(state, solution) + manhattan (state, solution);
 }
 
+template<class T, class G, class H>
+void solve(AStarSolver<T,G,H>& solver) {
+    clock_type::time_point start = clock_type::now();
+    solver.solve();
+    clock_type::time_point end = clock_type::now();
+    std::cout << "Solving took " <<
+        std::chrono::duration_cast<std::chrono::microseconds>(end - start).count()
+        << "us.\n";
+}
+
 int main (int argc, char **argv) {
     if(argc < 3) {
         cerr << "Usage: " << argv[0] << " start goal\n";
@@ -100,19 +113,19 @@ int main (int argc, char **argv) {
         /*
          * Make it so!
          */
-        displaced_solver.solve();
+        solve(displaced_solver);
         {
         ofstream displaced_out("displaced.txt");
         displaced_solver.print_solution(displaced_out);
         }
 
-        manhattan_solver.solve();
+        solve(manhattan_solver);
         {
         ofstream manhattan_out("manhattan.txt");
         manhattan_solver.print_solution(manhattan_out);
         }
 
-        sumdisman_solver.solve();
+        solve(sumdisman_solver);
         {
         ofstream sumdisman_out("displaced-manhattan.txt");
         sumdisman_solver.print_solution(sumdisman_out);
@@ -123,3 +136,4 @@ int main (int argc, char **argv) {
 
     return 0;
 }
+
