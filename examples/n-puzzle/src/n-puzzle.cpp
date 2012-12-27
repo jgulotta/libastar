@@ -31,15 +31,11 @@ using clock_type = std::chrono::high_resolution_clock;
  * sumdisman(...) simply sums displaced(...) and manhattan(...).
  */
 int displaced(const Puzzle& state, const Puzzle& solution) {
-    int result = -1;
+    int result = 0;
 
-    if(state.get_width() == solution.get_width()) {
-        result = 0;
-
-        for(TileIt it1 = state.tiles.begin(), it2 = solution.tiles.begin(); it1 != state.tiles.end(); it1++, it2++) {
-            if(*it1 != 0 && *it1 != *it2) {
-                result++;
-            }
+    for(auto it1 = begin(state.tiles), it2 = begin(solution.tiles); it1 != end(state.tiles); it1++, it2++) {
+        if(*it1 != 0 && *it1 != *it2) {
+            result++;
         }
     }
 
@@ -57,22 +53,20 @@ int manhattan(const Puzzle& state, const Puzzle& solution) {
      * This is presently O(n^2).
      * TODO: investigate O(n) solution
      */
-    if(state.get_width() == solution.get_width()) {
-        size_t width = state.get_width();
-        int i = 0;
-        for(TileIt it1 = state.tiles.begin(); it1 != state.tiles.end(); it1++, i++) {
-            if(*it1 != 0) {
+    int i = 0;
+    size_t width = state.tiles.size();
+    for(auto it1 = begin(state.tiles); it1 != end(state.tiles); it1++, i++) {
+        if(*it1 != 0) {
 
-                int j = 0;
-                for(TileIt it2 = solution.tiles.begin(); *it1 != *it2; it2++, j++);
+            int j = 0;
+            for(auto it2 = begin(solution.tiles); *it1 != *it2; it2++, j++);
 
-                int r1 = i / width;
-                int r2 = j / width;
-                int c1 = i % width;
-                int c2 = j % width;
+            int r1 = i / width;
+            int r2 = j / width;
+            int c1 = i % width;
+            int c2 = j % width;
 
-                result += abs(r2 - r1) + abs(c2 - c1);
-            }
+            result += abs(r2 - r1) + abs(c2 - c1);
         }
     }
 
@@ -130,7 +124,7 @@ int main (int argc, char **argv) {
         ofstream sumdisman_out("displaced-manhattan.txt");
         sumdisman_solver.print_solution(sumdisman_out);
         }
-    } catch (const char* str) {
+    } catch (const std::string& str) {
         cerr << str << endl;
     }
 

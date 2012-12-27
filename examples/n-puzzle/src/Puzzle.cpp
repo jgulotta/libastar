@@ -29,14 +29,14 @@ ostream& operator<< (ostream& o, const Puzzle& p) {
 bool operator==(const Puzzle&a, const Puzzle& b) { return a.tiles == b.tiles; }
 bool operator!=(const Puzzle&a, const Puzzle& b) { return !(a == b); }
 bool operator<(const Puzzle& a, const Puzzle& b) {
-    TileIt ait = a.tiles.begin(), bit = b.tiles.begin();
-    while( ait != a.tiles.end() && bit != b.tiles.end() ) {
+    auto ait = begin(a.tiles), bit = begin(b.tiles);
+    while( ait != end(a.tiles) && bit != end(b.tiles) ) {
         if(*ait != *bit) {
             return *ait < *bit;
         }
         ait++, bit++;
     }
-    return ait == a.tiles.end() && bit != b.tiles.end();
+    return ait == end(a.tiles) && bit != end(b.tiles);
 }
 
 
@@ -50,15 +50,11 @@ bool operator<(const Puzzle& a, const Puzzle& b) {
  */
 Puzzle::Puzzle(const string& filename) {
     string line;
-    ifstream in(filename.c_str());
+    ifstream in(filename);
 
     // Try to open the file and read the inital state
-    if(in.is_open()) {
-        getline(in, line);
-        in.close();
-    }
-    else {
-        throw "Unable to open file: " + filename + '\n';
+    if(!getline(in, line)) {
+        throw "Unable to read state from file: " + filename + '\n';
     }
 
     size_t tile = 0, blanks = 0, num = 0, root = 1, square = 1;
@@ -66,7 +62,7 @@ Puzzle::Puzzle(const string& filename) {
     istringstream linestream(line);
 
     while(linestream >> tile) {
-        tiles.push_back(tile);
+        tiles[num] = tile;
 
         if(num == square) {
             width = ++root;
@@ -81,11 +77,12 @@ Puzzle::Puzzle(const string& filename) {
     }
 
     if(num != square) {
-        throw "Puzzle is not square.";
+        std::cerr << "Puzzle '" << line << "' from " + filename + " is not square.";
+        throw "not square";
     }
 
     if(blanks != 1) {
-        throw "There must be exactly one blank tile.";
+        throw "Did not find exactly one blank tile in file " + filename;
     }
 }
 
@@ -154,9 +151,9 @@ bool Puzzle::might_reach(const Puzzle& p) const {
 size_t Puzzle::count_inversions() const {
     size_t inversions = 0;
 
-    for(TileIt it = tiles.begin(); it != tiles.end(); it++) {
+    for(auto it = tiles.begin(); it != tiles.end(); it++) {
         if(*it != 0) {
-            for(TileIt it1 = it + 1; it1 != tiles.end(); it1++) {
+            for(auto it1 = it + 1; it1 != tiles.end(); it1++) {
                 if(*it1 != 0 && *it1 < *it) {
                     inversions++;
                 }

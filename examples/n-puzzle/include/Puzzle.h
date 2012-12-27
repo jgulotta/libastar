@@ -1,12 +1,11 @@
 #ifndef PUZZLE_H
 #define PUZZLE_H
 
+#include <array>
 #include <iostream>
 #include <string>
 #include <vector>
 #include "Tile.h"
-
-typedef std::vector<Tile>::const_iterator TileIt;
 
 /*
  * A Puzzle is an array of Tiles.
@@ -26,7 +25,7 @@ class Puzzle {
         void get_neighbors(std::vector<Puzzle>&) const;
 
     private:
-        std::vector<Tile> tiles;
+        std::array<Tile,9> tiles;
         size_t width;
         size_t open_pos;
 
