@@ -17,6 +17,7 @@
 #include "astar/solver.h"
 
 using std::abs;
+using std::cout;
 using std::cerr;
 using std::endl;
 using std::ofstream;
@@ -77,14 +78,16 @@ int sumdisman(const Puzzle& state, const Puzzle& solution) {
     return displaced(state, solution) + manhattan (state, solution);
 }
 
+//float nilssons(const Puzzle& state, const Puzzle& solution) {
+    //return 0;
+//}
+
 template<class T, class G, class H>
-void solve(AStarSolver<T,G,H>& solver) {
+clock_type::rep time_solution(AStarSolver<T,G,H>& solver) {
     clock_type::time_point start = clock_type::now();
     solver.solve();
     clock_type::time_point end = clock_type::now();
-    std::cout << "Solving took " <<
-        std::chrono::duration_cast<std::chrono::microseconds>(end - start).count()
-        << "us.\n";
+    return std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
 }
 
 int main (int argc, char **argv) {
@@ -93,40 +96,20 @@ int main (int argc, char **argv) {
         exit(1);
     }
 
-    try {
-        Puzzle to_solve(argv[1]);
-        Puzzle solution(argv[2]);
+    Puzzle to_solve(argv[1]);
+    Puzzle solution(argv[2]);
 
-        auto generator = [](std::vector<Puzzle>& v, const Puzzle& p) { return p.get_neighbors(v); };
-        auto distance = [](const Puzzle&, const Puzzle&) { return 1; };
+    auto generator = [](std::vector<Puzzle>& v, const Puzzle& p) { return p.get_neighbors(v); };
+    auto distance = [](const Puzzle&, const Puzzle&) { return 1; };
 
-        auto displaced_solver = make_solver(to_solve, solution, generator, distance, displaced);
-        auto manhattan_solver = make_solver(to_solve, solution, generator, distance, manhattan);
-        auto sumdisman_solver = make_solver(to_solve, solution, generator, distance, sumdisman);
-
-        /*
-         * Make it so!
-         */
-        solve(displaced_solver);
-        {
-        ofstream displaced_out("displaced.txt");
-        displaced_solver.print_solution(displaced_out);
-        }
-
-        solve(manhattan_solver);
-        {
-        ofstream manhattan_out("manhattan.txt");
-        manhattan_solver.print_solution(manhattan_out);
-        }
-
-        solve(sumdisman_solver);
-        {
-        ofstream sumdisman_out("displaced-manhattan.txt");
-        sumdisman_solver.print_solution(sumdisman_out);
-        }
-    } catch (const std::string& str) {
-        cerr << str << endl;
+    clock_type::rep total = 0;
+    size_t reps = 1;
+    for (size_t i = 0; i < reps; ++i) {
+        auto solver = make_solver(to_solve, solution, generator, distance, manhattan);
+        total += time_solution(solver);
     }
+    cout << "Total microseconds: " << total << endl;
+    cout << "Average microseconds: " << static_cast<double>(total) / reps << endl;
 
     return 0;
 }
