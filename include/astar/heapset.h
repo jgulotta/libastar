@@ -80,10 +80,9 @@ template<class T, class SC, class VC>
 void HeapSet<T,SC,VC>::insert(UT ut) {
     auto it = states_.find(ut);
 
-    // TODO: emplace(_hint) vs insert
     if (it == end(states_)) {
         heap_.push(ut.get());
-        states_.insert(std::make_pair(std::move(ut), false));
+        states_.emplace(std::move(ut), false);
     } else {
         auto old = it->first.get();
         auto updated = ut.get();
@@ -91,7 +90,7 @@ void HeapSet<T,SC,VC>::insert(UT ut) {
         if (!it->second && higher_priority_(old, updated)) {
             update_heap(old, updated);
             it = states_.erase(it);
-            states_.insert(it, std::make_pair(std::move(ut), false));
+            states_.emplace_hint(it, std::move(ut), false);
         }
     }
 }
