@@ -1,8 +1,6 @@
 # libastar
 
-This project provides a templatized, header-only C++11 library for executing the [A\* search algorithm](http://en.wikipedia.org/wiki/A*_search_algorithm).
-
-Although it is a header-only template library, the project comes with examples demonstrating how the library may be used.
+This project provides a C++14 header-only template library for executing the [A\* search algorithm](http://en.wikipedia.org/wiki/A*_search_algorithm).
 
 # Requirements
 
@@ -15,8 +13,8 @@ If you wish to have a graphical interface to CMake you can install `ccmake`, whi
 
     sudo apt-get install cmake-curses-gui
     
-The project also utilizes C++11 and as such requires a C++11 compliant compiler.
-It has been tested with `g++-4.7` and `clang++-3.1` but should also work fine Visual Studio's `cl`.
+The project requires a C++14 compliant compiler.
+It has been tested with `g++-5.1` and `clang++-3.5` but should also work fine with Visual Studio 2015's `cl`.
 
 # Building and Running Examples
 
@@ -112,7 +110,7 @@ specified `std::ostream`, defaulting to `std::cout`. This function requires `ope
 ```cpp
 /*
   assume anything not explicitly defined below is appropriately defined,
-  specifically that Type exists and has a get_neighbors() method returning a std::vector<Type>,
+  specifically that Type exists and has a get_neighbors(std::vector<Type>&) method,
   that get_start() and get_end() each return the expected Type,
   and that operator< and operator<< are both supplied for Type comparison and output
 */
@@ -120,7 +118,7 @@ specified `std::ostream`, defaulting to `std::cout`. This function requires `ope
 
 Type start = get_start();
 Type end = get_end();
-auto gen = [](const Type& t) { return t.get_neighbors(); };
+auto gen = [](std::vector<Type>& v, const Type& t) { return t.get_neighbors(v); };
 auto dist = [](const Type& from, const Type& to) { return 1; };
 auto est = [](const Type& from, const Type& to) { return 0; };
 

@@ -19,17 +19,6 @@ class HeapSet {
     private:
         using UT = std::unique_ptr<T>;
 
-        template<typename U, typename... Args>
-        std::unique_ptr<U> make_unique(Args&&... args)
-        {
-            return std::unique_ptr<U>(new U(std::forward<Args>(args)...));
-        }
-
-        template<class... Args>
-        UT make_utype(Args&&... args) {
-            return make_unique<T>(std::forward<Args>(args)...);
-        }
-
         struct USC {
             bool operator()(const UT& l, const UT& r) {
                 return l && r && state_compare_(*l, *r);
@@ -62,18 +51,18 @@ bool HeapSet<T,SC,VC>::empty() const {
 }
 
 template<class T, class SC, class VC>
-auto HeapSet<T,SC,VC>::pop() -> heap_type {
+T* HeapSet<T,SC,VC>::pop() {
     return pop_heap();
 }
 
 template<class T, class SC, class VC>
 void HeapSet<T,SC,VC>::push(T&& t) {
-    insert(make_utype(std::move(t)));
+    insert(std::make_unique<T>(std::forward(t)));
 }
 
 template<class T, class SC, class VC> template<typename... Args>
 void HeapSet<T,SC,VC>::emplace(Args&&... args) {
-    insert(make_utype(std::forward<Args>(args)...));
+    insert(std::make_unique<T>(std::forward<Args>(args)...));
 }
 
 template<class T, class SC, class VC>
