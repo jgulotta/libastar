@@ -38,6 +38,7 @@ class Puzzle {
         friend int displaced(const Puzzle&, const Puzzle&);
         friend int manhattan(const Puzzle&, const Puzzle&);
         friend int sumdisman(const Puzzle&, const Puzzle&);
+        friend int nilssons(const Puzzle&, const Puzzle&);
 };
 
 #endif // PUZZLE_H

@@ -12,6 +12,7 @@
 
 using std::array;
 using std::ifstream;
+using std::istream;
 using std::istringstream;
 using std::ostream;
 using std::pair;
@@ -49,12 +50,12 @@ bool operator<(const Puzzle& a, const Puzzle& b) {
  * TODO: Support arbitrary rectangular puzzles
  */
 Puzzle::Puzzle(const string& filename) {
+    ifstream in{filename};
     string line;
-    ifstream in(filename);
 
     // Try to open the file and read the inital state
     if(!getline(in, line)) {
-        throw "Unable to read state from file: " + filename + '\n';
+        throw "Unable to read state\n";
     }
 
     size_t tile = 0, blanks = 0, num = 0, root = 1, square = 1;
@@ -77,12 +78,12 @@ Puzzle::Puzzle(const string& filename) {
     }
 
     if(num != square) {
-        std::cerr << "Puzzle '" << line << "' from " + filename + " is not square.";
+        std::cerr << "Puzzle '" << line << "' is not square.";
         throw "not square";
     }
 
     if(blanks != 1) {
-        throw "Did not find exactly one blank tile in file " + filename;
+        throw "Did not find exactly one blank tile in puzzle '" + line + "'";
     }
 }
 

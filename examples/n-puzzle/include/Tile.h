@@ -10,8 +10,8 @@ class Tile {
     public:
         Tile(size_t value = 0);
 
-    private:
         size_t value;
+    private:
 
         friend std::ostream& operator<<(std::ostream& o, const Tile& t);
         friend bool operator== (const Tile&, const Tile&);
