@@ -554,7 +554,7 @@ bool PuzzleState::LegalMove( TILE *StartTiles, TILE *TargetTiles, int spx, int s
 // AddSuccessor to give the successors to the AStar class. The A* specific initialisation
 // is done for each node internally, so here you just set the state information that
 // is specific to the application
-bool PuzzleState::GetSuccessors( AStarSearch<PuzzleState> *astarsearch, PuzzleState *parent_node )
+bool PuzzleState::GetSuccessors( AStarSearch<PuzzleState> *astarsearch, PuzzleState *)
 {
     PuzzleState NewNode;
 
@@ -599,7 +599,7 @@ bool PuzzleState::GetSuccessors( AStarSearch<PuzzleState> *astarsearch, PuzzleSt
 // of our map the answer is the map terrain value at this node since that is 
 // conceptually where we're moving
 
-float PuzzleState::GetCost( PuzzleState &successor )
+float PuzzleState::GetCost( PuzzleState &)
 {
     return 1.0f; // I love it when life is simple
 
