@@ -6,6 +6,7 @@
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+#include <chrono>
 #include <iostream>
 #include <stdio.h>
 #include <assert.h>
@@ -15,12 +16,14 @@
 
 using namespace std;
 
+using clock_type = std::chrono::high_resolution_clock;
+
 // Configuration
 
-#define NUM_TIMES_TO_RUN_SEARCH 1
-#define DISPLAY_SOLUTION_FORWARDS 1
+#define NUM_TIMES_TO_RUN_SEARCH 100000
+#define DISPLAY_SOLUTION_FORWARDS 0
 #define DISPLAY_SOLUTION_BACKWARDS 0
-#define DISPLAY_SOLUTION_INFO 1
+#define DISPLAY_SOLUTION_INFO 0
 #define DEBUG_LISTS 0
 
 // AStar search class
@@ -605,7 +608,6 @@ float PuzzleState::GetCost( PuzzleState &)
 
 }
 
-
 // Main
 
 int main( int argc, char *argv[] )
@@ -640,6 +642,8 @@ int main( int argc, char *argv[] )
 
     int NumTimesToSearch = NUM_TIMES_TO_RUN_SEARCH;
 
+    clock_type::rep total = 0;
+
     while( NumTimesToSearch-- )
     {
 
@@ -656,6 +660,7 @@ int main( int argc, char *argv[] )
 
         unsigned int SearchSteps = 0;
 
+        clock_type::time_point start = clock_type::now();
         do
         {
             SearchState = astarsearch.SearchStep();
@@ -700,6 +705,9 @@ int main( int argc, char *argv[] )
             SearchSteps++;
         }
         while( SearchState == AStarSearch<PuzzleState>::SEARCH_STATE_SEARCHING );
+
+        clock_type::time_point end = clock_type::now();
+        total += std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
 
         if( SearchState == AStarSearch<PuzzleState>::SEARCH_STATE_SUCCEEDED )
         {
@@ -796,6 +804,9 @@ int main( int argc, char *argv[] )
         cout << "SearchSteps : " << astarsearch.GetStepCount() << endl;
 #endif
     }
+
+    cout << "Total microseconds: " << total << endl;
+    cout << "Average microseconds: " << static_cast<double>(total) / NUM_TIMES_TO_RUN_SEARCH << endl;
 
     return 0;
 }
