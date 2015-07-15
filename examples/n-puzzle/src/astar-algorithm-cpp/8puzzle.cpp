@@ -24,6 +24,7 @@ using clock_type = std::chrono::high_resolution_clock;
 #define DISPLAY_SOLUTION_FORWARDS 0
 #define DISPLAY_SOLUTION_BACKWARDS 0
 #define DISPLAY_SOLUTION_INFO 0
+#define DISPLAY_SOLUTION 0
 #define DEBUG_LISTS 0
 
 // AStar search class
@@ -711,6 +712,7 @@ int main( int argc, char *argv[] )
 
         if( SearchState == AStarSearch<PuzzleState>::SEARCH_STATE_SUCCEEDED )
         {
+#if DISPLAY_SOLUTION
 #if DISPLAY_SOLUTION_FORWARDS
             cout << "Search found goal state\n";
 #endif
@@ -779,6 +781,7 @@ int main( int argc, char *argv[] )
 #endif
 
 //////////////
+#endif //DISPLAY_SOLUTION
 
             // Once you're done with the solution you can free the nodes up
             astarsearch.FreeSolutionNodes();
