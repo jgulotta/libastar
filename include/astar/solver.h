@@ -52,13 +52,13 @@ class AStarSolver
 
         struct ByCost {
             // using greater than creates a min-heap
-            bool operator()(const Node& l, const Node& r) {
+            bool operator()(const Node& l, const Node& r) const {
                 return l.cost_ > r.cost_;
             }
         };
 
         struct ByState {
-            bool operator()(const Node& l, const Node& r) {
+            bool operator()(const Node& l, const Node& r) const {
                 return l.state_ < r.state_;
             }
         };
@@ -74,7 +74,7 @@ class AStarSolver
 template<class T, class Gen, class Dist, class Est>
 AStarSolver<T,Gen,Dist,Est>::Node::Node(const AStarSolver& as, T&& s, Node* p) :
     prev_(p), state_(std::forward<T>(s)),
-    distance_(p ? (p->distance_ + as.distance_func_(p->state_, state_)) : G()),
+    distance_(p ? (p->distance_ + as.distance_func_(p->state_, state_)) : G{}),
     estimate_(as.cost_func_(state_, as.goal_)),
     cost_(distance_ + estimate_)
 {
@@ -125,7 +125,7 @@ bool AStarSolver<T,Gen,Dist,Est>::solve()
 
         generator_func_(neighbors, pnode->state_);
 
-        for (auto&& n : neighbors) {
+        for (auto& n : neighbors) {
             states_.emplace(*this, std::move(n), pnode);
         }
 
